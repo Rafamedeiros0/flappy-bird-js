@@ -10,7 +10,7 @@ const canvas = document.querySelector('canvas');
 const contexto = canvas.getContext('2d')
 
 //video 1: https://www.youtube.com/watch?v=jOAU81jdi-c
-//video 2: https://www.youtube.com/watch?v=jOAU81jdi-c
+//video 2: https://www.youtube.com/watch?v=6ubysIIjarI
 //video 3: https://www.youtube.com/watch?v=ddG60OX7_8A
 //https://www.w3schools.com/tags/canvas_fillstyle.asp
 //https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
