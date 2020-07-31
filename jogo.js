@@ -48,6 +48,12 @@ const flappyBird = {
   dy: 50,
   dWidth: 33,
   dHeight: 24,
+  gravity: 0.25,
+  speed: 0,
+  update() {
+    flappyBird.speed = flappyBird.speed + flappyBird.gravity
+    flappyBird.dy = flappyBird.dy + flappyBird.speed
+  },
   draw() {
     contexto.drawImage(
       flappyBird.image,
@@ -90,11 +96,70 @@ const background = {
   }
 }
 
+const messageGetReady = {
+  image: sprites,
+  sx: 134,
+  sy: 0,
+  sWidth: 174,
+  sHeight: 152,
+  dx: (canvas.width/2) - 174/2,
+  dy: 50,
+  dWidth: 174,
+  dHeight: 152,
+  draw() {
+    contexto.drawImage(
+      messageGetReady.image,
+      messageGetReady.sx, messageGetReady.sy,
+      messageGetReady.sWidth, messageGetReady.sHeight,
+      messageGetReady.dx, messageGetReady.dy,
+      messageGetReady.dWidth, messageGetReady.dHeight
+    );
+
+  }
+}
+
+let activeScreen = {}
+function changeScreen(newScreen) {
+  activeScreen = newScreen
+}
+
+const screen = {
+  start: {
+    draw() {
+      background.draw()
+      floor.draw()
+      flappyBird.draw()
+      messageGetReady.draw()
+    },
+    click() {
+      changeScreen(screen.game)
+    },
+    update() {
+
+    }
+  },
+  game: {
+    draw() {
+      background.draw()
+      floor.draw()
+      flappyBird.draw()
+    },
+    update() {
+      flappyBird.update()
+    }
+  }
+}
+
 function loop() {
-  background.draw()
-  floor.draw()
-  flappyBird.draw()
+  activeScreen.draw();
+  activeScreen.update();
+
   requestAnimationFrame(loop);
 }
 
+window.addEventListener('click', () => {
+  activeScreen.click ? activeScreen.click(): null
+})
+
+changeScreen(screen.start)
 loop();
