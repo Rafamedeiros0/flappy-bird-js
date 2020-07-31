@@ -1,5 +1,8 @@
 console.log('[RafaMedeiros0] Flappy Bird');
 
+const songHit = new Audio()
+songHit.src = './effects/hit.wav'
+
 const sprites = new Image();
 sprites.src = './sprites.png';
 
@@ -7,8 +10,12 @@ const canvas = document.querySelector('canvas');
 const contexto = canvas.getContext('2d')
 
 //video 1: https://www.youtube.com/watch?v=jOAU81jdi-c
+//video 2: https://www.youtube.com/watch?v=jOAU81jdi-c
+//video 3: https://www.youtube.com/watch?v=ddG60OX7_8A
 //https://www.w3schools.com/tags/canvas_fillstyle.asp
 //https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
+//https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement/Audio
+
 
 const floor = {
   image: sprites,
@@ -38,32 +45,60 @@ const floor = {
   }
 }
 
-const flappyBird = {
-  image: sprites,
-  sx: 0,
-  sy: 0,
-  sWidth: 33,
-  sHeight: 24,
-  dx: 10,
-  dy: 50,
-  dWidth: 33,
-  dHeight: 24,
-  gravity: 0.25,
-  speed: 0,
-  update() {
-    flappyBird.speed = flappyBird.speed + flappyBird.gravity
-    flappyBird.dy = flappyBird.dy + flappyBird.speed
-  },
-  draw() {
-    contexto.drawImage(
-      flappyBird.image,
-      flappyBird.sx, flappyBird.sy,
-      flappyBird.sWidth, flappyBird.sHeight,
-      flappyBird.dx, flappyBird.dy,
-      flappyBird.dWidth, flappyBird.dHeight
-    );
+function isClash(flappyBird,floor) {
+  const flappyBirdY = flappyBird.dy + flappyBird.dHeight
+  const floorY = floor.dy
+
+  if (flappyBirdY >= floorY) {
+    return true
   }
+  return false
 }
+
+function createFlappyBird() {
+  const flappyBird = {
+    image: sprites,
+    sx: 0,
+    sy: 0,
+    sWidth: 33,
+    sHeight: 24,
+    dx: 10,
+    dy: 50,
+    dWidth: 33,
+    dHeight: 24,
+    jumpHeight: 4.6,
+    gravity: 0.25,
+    speed: 0,
+    update() {
+      if (isClash(flappyBird,floor)) {
+        console.log('Is clash')
+        songHit.play()
+
+        setTimeout(() => {
+          changeScreen(screen.start)
+        }, 500)
+        return
+      }
+      flappyBird.speed = flappyBird.speed + flappyBird.gravity
+      flappyBird.dy = flappyBird.dy + flappyBird.speed
+    },
+    jump() {
+      flappyBird.speed = - flappyBird.jumpHeight
+    },
+    draw() {
+      contexto.drawImage(
+        flappyBird.image,
+        flappyBird.sx, flappyBird.sy,
+        flappyBird.sWidth, flappyBird.sHeight,
+        flappyBird.dx, flappyBird.dy,
+        flappyBird.dWidth, flappyBird.dHeight
+      );
+    }
+  }
+  return flappyBird
+}
+
+
 
 const background = {
   image: sprites,
@@ -118,17 +153,25 @@ const messageGetReady = {
   }
 }
 
+const globals = {}
 let activeScreen = {}
 function changeScreen(newScreen) {
   activeScreen = newScreen
+
+  
+  activeScreen.setup? activeScreen.setup(): null
+  
 }
 
 const screen = {
   start: {
+    setup() {
+      globals.flappyBird = createFlappyBird();
+    },
     draw() {
       background.draw()
       floor.draw()
-      flappyBird.draw()
+      globals.flappyBird.draw()
       messageGetReady.draw()
     },
     click() {
@@ -142,10 +185,13 @@ const screen = {
     draw() {
       background.draw()
       floor.draw()
-      flappyBird.draw()
+      globals.flappyBird.draw()
+    },
+    click() {
+      globals.flappyBird.jump()
     },
     update() {
-      flappyBird.update()
+      globals.flappyBird.update()
     }
   }
 }
@@ -163,3 +209,5 @@ window.addEventListener('click', () => {
 
 changeScreen(screen.start)
 loop();
+
+// jump flappyBird
